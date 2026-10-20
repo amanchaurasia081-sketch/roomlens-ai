@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://amanchaurasia081-sketch.github.io/roomlens-ai/sitemap.xml
