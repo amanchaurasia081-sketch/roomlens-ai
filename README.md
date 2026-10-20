@@ -60,6 +60,25 @@ Then open `http://localhost:8080` in Chrome, Edge, or Firefox.
 3. On your phone, open `http://<YOUR_PC_IP_ADDRESS>:8080` (e.g. `http://192.168.1.5:8080`).
 4. Tap **Start Camera** and use the **Flip Camera** button to use your phone's rear camera while walking around the room!
 
+## 🌐 Publish and Get Listed in Search
+
+The live site is hosted on GitHub Pages at [RoomLens AI](https://amanchaurasia081-sketch.github.io/roomlens-ai/). To publish local changes, open PowerShell in this project folder and run:
+
+```powershell
+git add index.html robots.txt sitemap.xml README.md
+git commit -m "Add SEO metadata and sitemap"
+git push origin main
+```
+
+GitHub Pages will publish the pushed changes automatically. The site and its camera features require HTTPS, which the GitHub Pages URL provides.
+
+To ask Google to crawl the site:
+1. Add the site in [Google Search Console](https://search.google.com/search-console/) and complete its ownership verification.
+2. Submit `https://amanchaurasia081-sketch.github.io/roomlens-ai/sitemap.xml` under **Sitemaps**.
+3. Use **URL Inspection** on `https://amanchaurasia081-sketch.github.io/roomlens-ai/` and select **Request indexing**.
+
+Search engines decide when and whether to index a site; submission does not guarantee or immediately produce search results.
+
 ---
 
 ## 🏷️ Detectable Objects (80 Standard Classes)
@@ -78,4 +97,3 @@ Then open `http://localhost:8080` in Chrome, Edge, or Firefox.
 - **Camera Stream**: WebRTC `navigator.mediaDevices.getUserMedia` with front/back camera toggling and torch support.
 - **Audio & Speech**: HTML5 Web Audio API synthesizer + Web Speech API (`SpeechRecognition` & `SpeechSynthesis`).
 - **Server**: Zero-config Java `jwebserver` (JDK 25) / PowerShell HTTP listener.
-
