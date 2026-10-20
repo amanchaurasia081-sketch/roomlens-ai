@@ -1,6 +1,8 @@
 # RoomLens AI 🎯👁️‍🗨️
 ### Real-Time Room Object Finder & Spatial Vision Scanner
 
+🔗 **Live Demo**: [https://amanchaurasia081-sketch.github.io/roomlens-ai/](https://amanchaurasia081-sketch.github.io/roomlens-ai/)
+
 **RoomLens AI** is a futuristic web application that turns any smartphone, tablet, or laptop camera into an intelligent room radar. It helps users find misplaced household objects (cell phones, keys, mugs, remotes, backpacks, etc.) and identify everything visible in their environment in real time.
 
 ---
