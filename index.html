@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RoomLens AI - Smart Room Object Finder & Vision Scanner</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22><text y=%2222%22 font-size=%2220%22>🎯</text></svg>">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="app-header">
+        <div class="brand">
+            <span class="brand-icon">👁️‍🗨️</span>
+            <div class="brand-text">
+                <h1>ROOMLENS AI</h1>
+                <span class="tagline">Spatial Object Radar & Room Scanner</span>
+            </div>
+        </div>
+
+        <div class="header-status">
+            <div id="status-pill" class="status-pill status-loading">
+                <span class="status-dot"></span>
+                <span class="status-text">Initializing AI Vision...</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="app-container">
+        
+        <!-- Left Section: Viewport & Search -->
+        <section class="viewport-section">
+            
+            <!-- Mode Switcher Tabs -->
+            <nav class="mode-tabs">
+                <button id="tab-search-mode" class="tab-btn active">
+                    <span>🎯</span> Find My Object
+                </button>
+                <button id="tab-identify-mode" class="tab-btn">
+                    <span>🔍</span> Identify Everything
+                </button>
+                <button id="tab-upload-mode" class="tab-btn">
+                    <span>🖼️</span> Upload / Demos
+                </button>
+            </nav>
+
+            <!-- Search Bar & Tag Row (Active in Search Mode) -->
+            <div id="search-control-group" class="search-container">
+                <div class="search-input-wrapper">
+                    <span class="search-icon">🔎</span>
+                    <input type="text" id="search-input" placeholder="What are you looking for? (e.g. phone, cup, laptop, keys, bottle)..." autocomplete="off" value="cell phone">
+                    <button id="btn-clear-search" class="btn-icon" title="Clear search">✕</button>
+                    <button id="btn-voice-search" class="btn-voice" title="Speak to search">
+                        <span class="mic-icon">🎙️</span> Voice Search
+                    </button>
+                </div>
+
+                <!-- Quick Suggestion Tags -->
+                <div class="quick-tags-row">
+                    <span class="tags-label">Quick Find:</span>
+                    <button class="quick-tag active" data-target="cell phone">📱 Phone</button>
+                    <button class="quick-tag" data-target="cup">☕ Cup / Mug</button>
+                    <button class="quick-tag" data-target="bottle">🍾 Bottle</button>
+                    <button class="quick-tag" data-target="laptop">💻 Laptop</button>
+                    <button class="quick-tag" data-target="backpack">🎒 Backpack</button>
+                    <button class="quick-tag" data-target="remote">🕹️ Remote</button>
+                    <button class="quick-tag" data-target="book">📖 Book</button>
+                    <button class="quick-tag" data-target="chair">🪑 Chair</button>
+                    <button class="quick-tag" data-target="scissors">✂️ Scissors</button>
+                    <button class="quick-tag" data-target="cat">🐱 Cat</button>
+                </div>
+            </div>
+
+            <!-- Camera Viewport & HUD Stage -->
+            <div class="viewport-stage" id="viewport-stage">
+                <!-- Video Stream -->
+                <video id="webcam-video" autoplay playsinline muted></video>
+
+                <!-- Static Test Image (for Uploads & Demos) -->
+                <img id="test-image" class="hidden" alt="Test Room Image">
+
+                <!-- Cyberpunk Canvas HUD Overlay -->
+                <canvas id="hud-canvas"></canvas>
+
+                <!-- Telemetry Chips -->
+                <div class="telemetry-overlay">
+                    <div class="telemetry-group">
+                        <span class="telemetry-chip" id="telemetry-fps">0 FPS</span>
+                        <span class="telemetry-chip" id="telemetry-res">1280x720</span>
+                    </div>
+                    <div class="telemetry-group">
+                        <span class="telemetry-chip" id="objects-count-badge">0 Detected</span>
+                    </div>
+                </div>
+
+                <!-- Floating Target Radar Status Banner -->
+                <div id="target-status-banner" class="target-banner banner-searching hidden">
+                    <span id="target-status-text">🔍 Sweeping room for <strong>"cell phone"</strong>...</span>
+                </div>
+            </div>
+
+            <!-- Viewport Controls Bar -->
+            <div class="viewport-controls">
+                <div class="controls-left">
+                    <button id="btn-start-camera" class="btn-primary">
+                        <span class="icon">📹</span> Start Camera
+                    </button>
+                    <button id="btn-switch-camera" class="btn-secondary hidden" title="Switch between Front / Rear camera">
+                        <span>🔄</span> Flip Camera
+                    </button>
+                    <button id="btn-torch" class="btn-secondary hidden" title="Toggle Flashlight / Torch">
+                        <span>🔦</span> Torch
+                    </button>
+                </div>
+
+                <div class="controls-right">
+                    <button id="btn-snapshot" class="btn-secondary" title="Save snapshot with identified objects">
+                        <span>📸</span> Snapshot
+                    </button>
+                    <button id="btn-speak-room" class="btn-secondary" title="Describe all visible objects in natural voice">
+                        <span>🗣️</span> Speak Room
+                    </button>
+                </div>
+            </div>
+
+            <!-- Upload & Sample Demos Drawer -->
+            <div id="upload-container" class="upload-container hidden">
+                <div id="upload-drop-zone" class="upload-drop-zone">
+                    <input type="file" id="file-upload-input" accept="image/*" class="hidden">
+                    <div class="upload-icon">📂</div>
+                    <div class="upload-prompt">Click or drag & drop a photo of your room</div>
+                    <div class="upload-sub">Supports JPG, PNG, WebP (Great for testing without a webcam)</div>
+                </div>
+
+                <div class="sample-demos-header">Or test immediately with sample rooms:</div>
+                <div class="sample-demos-grid">
+                    <div class="sample-demo-card" data-src="assets/sample-rooms/desk-setup.jpg" data-name="Work Desk Setup">
+                        <img src="assets/sample-rooms/desk-setup.jpg" alt="Work Desk">
+                        <span>Work Desk Setup</span>
+                    </div>
+                    <div class="sample-demo-card" data-src="assets/sample-rooms/living-room.jpg" data-name="Living Room">
+                        <img src="assets/sample-rooms/living-room.jpg" alt="Living Room">
+                        <span>Modern Living Room</span>
+                    </div>
+                    <div class="sample-demo-card" data-src="assets/sample-rooms/kitchen.jpg" data-name="Kitchen & Dining">
+                        <img src="assets/sample-rooms/kitchen.jpg" alt="Kitchen">
+                        <span>Kitchen & Dining</span>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Right Section: Sidebar (Inventory, Last Seen, Settings) -->
+        <aside class="sidebar-section">
+            
+            <!-- Live Room Inventory Card -->
+            <div class="sidebar-card">
+                <div class="card-header">
+                    <h2><span>📦</span> Room Inventory</h2>
+                    <span class="card-badge" id="inventory-badge">Live</span>
+                </div>
+                <div id="inventory-list" class="inventory-container">
+                    <div id="empty-inventory-msg" class="empty-state">
+                        <div class="empty-icon">📡</div>
+                        <p>No objects currently detected.<br>Start the camera to begin room scanning.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- "Last Seen" Memory Card -->
+            <div class="sidebar-card">
+                <div class="card-header">
+                    <h2><span>🕒</span> Last Seen Memory</h2>
+                    <span class="card-badge">History</span>
+                </div>
+                <div id="history-list" class="history-container">
+                    <div class="empty-state">
+                        <div class="empty-icon">🧠</div>
+                        <p>Objects spotted will be recorded here so you know where you left them.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vision & Audio Settings Card -->
+            <div class="sidebar-card">
+                <div class="card-header">
+                    <h2><span>⚙️</span> Scanner Settings</h2>
+                </div>
+                <div class="settings-group">
+                    <div class="setting-item">
+                        <label for="slider-confidence">Confidence Threshold</label>
+                        <div class="slider-wrapper">
+                            <input type="range" id="slider-confidence" min="30" max="85" value="50">
+                            <span id="val-confidence" class="slider-val">50%</span>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <label for="select-model">Model Precision</label>
+                        <select id="select-model" class="custom-select">
+                            <option value="lite_mobilenet_v2" selected>Lite MobileNet V2 (Fastest)</option>
+                            <option value="mobilenet_v2">MobileNet V2 (Higher Precision)</option>
+                        </select>
+                    </div>
+
+                    <div class="setting-item">
+                        <label for="toggle-sound">Audio SFX (Chimes & Radar)</label>
+                        <label class="switch">
+                            <input type="checkbox" id="toggle-sound" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-item">
+                        <label for="toggle-voice">Voice Guidance (Spoken Alerts)</label>
+                        <label class="switch">
+                            <input type="checkbox" id="toggle-voice" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+        </aside>
+
+    </main>
+
+    <!-- TensorFlow.js Core & COCO-SSD Model from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3"></script>
+
+    <!-- Application Modules -->
+    <script src="js/audio.js"></script>
+    <script src="js/detector.js"></script>
+    <script src="js/hud.js"></script>
+    <script src="js/app.js"></script>
+
+</body>
+</html>
+
